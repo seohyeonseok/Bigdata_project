@@ -1,0 +1,83 @@
+경기도 남단 : 127.287977  36.894504
+경기도 동단 : 127.847836  37.552131
+경기도 북단 : 127.091649  38.280904
+경기도 서단 : 126.535712  37.199303
+
+#파일가져오기 및 확인
+install.packages("ggmap")
+library(ggmap)
+url<-read.csv("C:/Users/student/Downloads/어린이집현황.csv")
+head(url)
+
+#주소지 주소 추출
+hanam<-url[url$시군구명=="하남시",]
+hanam
+
+#하남 주소분류 및 중심 하남 설정 설정
+gc<-geocode(enc2utf8('경기도 하남시'))
+gc
+cen<-as.numeric(gc)
+addr_hanam<-hanam$소재지도로명주소
+addr_hanam
+addr<-as.vector(addr_hanam)
+addr
+
+#주소지 좌표검색 및 null값 제거
+gc<-geocode(enc2utf8(addr))
+gc
+df<-na.omit(gc)
+df
+
+#지도출력
+map<-get_googlemap(center=cen,maptype="roadmap",zoom=10,marker=tail(df,81)) #마크 출력 인식
+ggmap(map)  #맵으로 출력
+
+ggmap(map)+geom_point(data=df,aes(x=lon,y=lat,size=0),zoom=10,alpha=0.2) #원형그림 출력
+
+#지도 이미지 불러오기 및 좌표 찍기, 경기도 한정
+library(EBImage)
+library(png)
+image<-readImage(file.choose()) # 이미지 불러오기  ( RGB 형식으로 저장됨 )
+display(image,method="raster") # 이미지 확인
+
+plot(126.535712:127.847836, 36.894504:38.280904, type='n', main="배경그림 넣기", xlab="x", ylab="y")
+plot("경도","위도",xlim=c(126.535712,127.84836),ylim=c(36.894504,38.280904),type='n',main="어린이집위치")
+parlim <- par()
+rasterImage(image, parlim$usr[1], parlim$usr[3], parlim$usr[2], parlim$usr[4])
+grid()
+points(df$lon,df$lat)
+
+
+#시군구별 개수 파악
+library("KoNLP")
+url<-read.csv("C:/Users/student/Downloads/어린이집현황.csv")
+head(url)
+useSejongDic()
+noun<-sapply(url$시군구명,extractNoun,USE.NAMES = F)
+head(noun)
+noun2<-unlist(noun)
+noun2
+noun2_1<-as.vector(noun2)
+noun2_1
+#replace(target vector, index vector or condition for change, value)
+noun2_2<-replace(noun2_1,noun2_1=='고양시 덕양구', '고양시')
+noun2_3<-replace(noun2_2,noun2_1=='고양시 일산동구', '고양시')
+noun2_4<-replace(noun2_3,noun2_1=='고양시 일산서구', '고양시')
+noun2_5<-replace(noun2_4,noun2_1=='수원시 권선구', '수원시')
+noun2_6<-replace(noun2_5,noun2_1=='수원시 팔달구', '수원시')
+noun2_7<-replace(noun2_6,noun2_1=='수원시 장안구', '수원시')
+noun2_8<-replace(noun2_7,noun2_1=='수원시 영통구', '수원시')
+noun2_9<-replace(noun2_8,noun2_1=='분당구', '성남시')
+noun2_10<-replace(noun2_9,noun2_1=='수정구', '성남시')
+noun2_11<-replace(noun2_10,noun2_1=='중원구', '성남시')
+
+noun2_11
+word_count<-table(noun2_11)
+word_count
+w_c<-as.data.frame(word_count)
+w_c
+write.csv(w_c,"C:/Users/w_c.csv")
+barplot(w_c$Freq,main=" ",names.arg=w_c$noun2)
+
+
+
