@@ -1,0 +1,6 @@
+nginx(Linux)
+vmware 사용 : 	웹서버 오른쪽은 vmwareworkstation
+		(vmwareworkstation 해적판)
+		스냅샷기능 추가 (5단계마다 스냅샷) -> 스냅샷 단계마다 기록..
+vmware server와 client browser는 물리적으로 떨어져있어야 한다.
+순서도를 세분화시켜서 표현( 다른 차트나 알고리즘 표현)
